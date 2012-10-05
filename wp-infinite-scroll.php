@@ -2,11 +2,11 @@
 
 /*
 Plugin Name: WP Infinite Scroll
-Plugin URI: http://yellowhousedesign.com
-Description: WP Infinite Scroll Buttons
-Version: 0.1
-Author: Yellow House Design
-Author URI: http://yellowhousedesign.com
+Plugin URI: http://zslabs.com
+Description: Infinit scroll for WordPress!
+Version: 0.2
+Author: ZS Labs
+Author URI: http://zslabs.com
 License: GPL2
 */
 

@@ -7,5 +7,7 @@ function wpis_docs() {
 
 	<?php
 
+	do_action('wpis_docs');
+
 	echo ob_get_clean();
 }

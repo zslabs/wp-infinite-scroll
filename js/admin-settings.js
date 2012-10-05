@@ -19,4 +19,45 @@
 		}
 	});
 
+	var WPIS_Configuration = {
+		init : function() {
+			this.files();
+		},
+
+		files : function() {
+			if ( $( '.wpis_upload_image_button' ).length > 0 ) {
+				window.formfield = '';
+
+				$('.wpis_upload_image_button').on('click', function(e) {
+					e.preventDefault();
+					window.formfield = $(this).parent().prev();
+					window.tbframe_interval = setInterval(function() {
+						jQuery('#TB_iframeContent').contents().find('.savesend .button').val(wpis_vars.use_this_file).end().find('#insert-gallery, .wp-post-thumbnail').hide();
+					}, 2000);
+				if (wpis_vars.post_id != null ) {
+					var post_id = 'post_id=' + wpis_vars.post_id + '&';
+				}
+					tb_show(wpis_vars.add_new_file, 'media-upload.php?' + post_id +'TB_iframe=true');
+				});
+
+				window.original_send_to_editor = window.send_to_editor;
+				window.send_to_editor = function (html) {
+					if (window.formfield) {
+						imgurl = $('a', '<div>' + html + '</div>').attr('href');
+						window.formfield.val(imgurl);
+						window.clearInterval(window.tbframe_interval);
+						tb_remove();
+						$('.preview-image img').attr('src',imgurl);
+					} else {
+						window.original_send_to_editor(html);
+					}
+					window.formfield = '';
+					window.imagefield = false;
+				}
+			}
+		}
+	}
+
+	WPIS_Configuration.init();
+
 })(jQuery);

@@ -14,9 +14,9 @@
 */
 
 function wpis_register_settings() {
-	
+
 	// setup some default option sets
-	$pages = get_pages();	
+	$pages = get_pages();
 	$pages_options = array();
 	array_unshift($pages_options, ''); // blank option
 	if($pages) {
@@ -26,17 +26,24 @@ function wpis_register_settings() {
 	}
 	// get list of post types
 	$args = array(
-		'public'   => true	
-	); 
+		'public'   => true
+	);
 	$output = 'names'; // names or objects, note names is the default
 	$operator = 'and'; // 'and' or 'or'
 	$post_types = get_post_types($args,$output,$operator);
-	 
+
 	/* white list our settings, each in their respective section
 	   filters can be used to add more options to each section */
 	$wpis_settings = array(
-		'general' => apply_filters('wpis_settings_general', 
+		'general' => apply_filters('wpis_settings_general',
 			array(
+				array(
+					'id' => 'img',
+					'name' => __('Load image', 'wpis'),
+					'desc' => __('Normally a gif spinner. Clear to use default', 'wpis'),
+					'type' => 'upload',
+					'std' => WPIS_BASE_URL . 'img/ajax-loader.gif'
+				),
 				array(
 					'id' => 'msgText',
 					'name' => __('Message Text', 'wpis'),
@@ -76,19 +83,19 @@ function wpis_register_settings() {
 			)
 		)
 	);
-	
-	if( false == get_option( 'wpis_settings_general' ) ) {  
-        add_option( 'wpis_settings_general' );  
+
+	if( false == get_option( 'wpis_settings_general' ) ) {
+        add_option( 'wpis_settings_general' );
    }
-	
-	
+
+
 	add_settings_section(
 		'wpis_settings_general',
 		__('General Settings', 'wpis'),
 		'wpis_settings_general_description_callback',
 		'wpis_settings_general'
 	);
-	
+
 	foreach($wpis_settings['general'] as $option) {
 		add_settings_field(
 			'wpis_settings_general[' . $option['id'] . ']',
@@ -108,7 +115,7 @@ function wpis_register_settings() {
 	    	)
 		);
 	}
-	
+
 	// creates our settings in the options table
 	register_setting('wpis_settings_general', 'wpis_settings_general', 'wpis_settings_sanitize');
 }
@@ -134,8 +141,8 @@ function wpis_settings_general_description_callback() {
  *
 */
 
-function wpis_header_callback($args) { 
-    echo '';  
+function wpis_header_callback($args) {
+    echo '';
 }
 
 
@@ -146,17 +153,17 @@ function wpis_header_callback($args) {
  *
 */
 
-function wpis_checkbox_callback($args) { 
- 
+function wpis_checkbox_callback($args) {
+
 	global $wpis_options;
 
 	$checked = !empty($wpis_options[$args['id']]) ? checked(1, $wpis_options[$args['id']], false) : '';
 	$html = '<input type="hidden" id="wpis_settings_' . $args['section'] . '[' . $args['id'] . ']" name="wpis_settings_' . $args['section'] . '[' . $args['id'] . ']" value="0" />';
-    $html .= '<input type="checkbox" id="wpis_settings_' . $args['section'] . '[' . $args['id'] . ']" name="wpis_settings_' . $args['section'] . '[' . $args['id'] . ']" value="1" ' . $checked . '/>';   
-    $html .= '<label for="wpis_settings_' . $args['section'] . '[' . $args['id'] . ']"> '  . $args['desc'] . '</label>';  
- 
-    echo $html; 
- 
+    $html .= '<input type="checkbox" id="wpis_settings_' . $args['section'] . '[' . $args['id'] . ']" name="wpis_settings_' . $args['section'] . '[' . $args['id'] . ']" value="1" ' . $checked . '/>';
+    $html .= '<label for="wpis_settings_' . $args['section'] . '[' . $args['id'] . ']"> '  . $args['desc'] . '</label>';
+
+    echo $html;
+
 }
 
 
@@ -167,8 +174,8 @@ function wpis_checkbox_callback($args) {
  *
 */
 
-function wpis_multicheck_callback($args) { 
- 
+function wpis_multicheck_callback($args) {
+
 	global $wpis_options;
 
 	foreach($args['options'] as $key => $option) :
@@ -189,17 +196,17 @@ function wpis_multicheck_callback($args) {
  *
 */
 
-function wpis_text_callback($args) { 
- 
+function wpis_text_callback($args) {
+
 	global $wpis_options;
 
 	if(isset($wpis_options[$args['id']])) { $value = $wpis_options[$args['id']]; } else { $value = isset($args['std']) ? $args['std'] : ''; }
 	$size = isset($args['size']) && !is_null($args['size']) ? $args['size'] : 'regular';
-    $html = '<input type="text" class="'. $args['inputclass'] . ' ' .  $args['size'] . '-text" id="wpis_settings_' . $args['section'] . '[' . $args['id'] . ']" name="wpis_settings_' . $args['section'] . '[' . $args['id'] . ']" value="' . $value . '"/>';   
-    $html .= '<label for="wpis_settings_' . $args['section'] . '[' . $args['id'] . ']"> '  . $args['desc'] . '</label>';  
- 
-    echo $html; 
- 
+    $html = '<input type="text" class="'. $args['inputclass'] . ' ' .  $args['size'] . '-text" id="wpis_settings_' . $args['section'] . '[' . $args['id'] . ']" name="wpis_settings_' . $args['section'] . '[' . $args['id'] . ']" value="' . $value . '"/>';
+    $html .= '<label for="wpis_settings_' . $args['section'] . '[' . $args['id'] . ']"> '  . $args['desc'] . '</label>';
+
+    echo $html;
+
 }
 
 
@@ -210,20 +217,20 @@ function wpis_text_callback($args) {
  *
 */
 
-function wpis_select_callback($args) { 
- 
+function wpis_select_callback($args) {
+
 	global $wpis_options;
 
-    $html = '<select id="wpis_settings_' . $args['section'] . '[' . $args['id'] . ']" name="wpis_settings_' . $args['section'] . '[' . $args['id'] . ']"/>';   
+    $html = '<select id="wpis_settings_' . $args['section'] . '[' . $args['id'] . ']" name="wpis_settings_' . $args['section'] . '[' . $args['id'] . ']"/>';
     foreach($args['options'] as $option => $name) {
 		$selected = isset($wpis_options[$args['id']]) ? selected($option, $wpis_options[$args['id']], false) : '';
 		$html .= '<option value="' . $option . '" ' . $selected . '>' . $name . '</option>';
 	}
 	$html .= '</select>';
-	$html .= '<label for="wpis_settings_' . $args['section'] . '[' . $args['id'] . ']"> '  . $args['desc'] . '</label>';  
- 
-    echo $html; 
- 
+	$html .= '<label for="wpis_settings_' . $args['section'] . '[' . $args['id'] . ']"> '  . $args['desc'] . '</label>';
+
+    echo $html;
+
 }
 
 
@@ -234,20 +241,47 @@ function wpis_select_callback($args) {
  *
 */
 
-function wpis_rich_editor_callback($args) { 
- 
+function wpis_rich_editor_callback($args) {
+
 	global $wpis_options, $wp_version;
-	
+
 	if(isset($wpis_options[$args['id']])) { $value = $wpis_options[$args['id']]; } else { $value = isset($args['std']) ? $args['std'] : ''; }
     if($wp_version >= 3.3 && function_exists('wp_editor')) {
 		$html = wp_editor($value, 'wpis_settings_' . $args['section'] . '[' . $args['id'] . ']', array('textarea_name' => 'wpis_settings_' . $args['section'] . '[' . $args['id'] . ']'));
     } else {
 		$html = '<textarea class="large-text" rows="10" id="wpis_settings_' . $args['section'] . '[' . $args['id'] . ']" name="wpis_settings_' . $args['section'] . '[' . $args['id'] . ']">' . $value . '</textarea>';
-	}	
-	$html .= '<br/><label for="wpis_settings_' . $args['section'] . '[' . $args['id'] . ']"> '  . $args['desc'] . '</label>';  
- 
+	}
+	$html .= '<br/><label for="wpis_settings_' . $args['section'] . '[' . $args['id'] . ']"> '  . $args['desc'] . '</label>';
+
     echo $html;
- 
+
+}
+
+
+/**
+ * Upload Callback
+ *
+ * Renders upload fields.
+ *
+*/
+
+function wpis_upload_callback($args) {
+
+	global $wpis_options;
+
+	if(isset($wpis_options[$args['id']])) { $value = $wpis_options[$args['id']]; } else { $value = isset($args['std']) ? $args['std'] : ''; }
+	$size = isset($args['size']) && !is_null($args['size']) ? $args['size'] : 'regular';
+    $html = '<input type="text" class="' . $args['size'] . '-text wpis_upload_field" id="wpis_settings_' . $args['section'] . '[' . $args['id'] . ']" name="wpis_settings_' . $args['section'] . '[' . $args['id'] . ']" value="' . esc_attr( $value ) . '"/>';
+    $html .= '<span>&nbsp;<input type="button" class="wpis_upload_image_button button-secondary" value="' . __('Upload File', 'wpis') . '"/></span>';
+    $html .= '<label for="wpis_settings_' . $args['section'] . '[' . $args['id'] . ']"> '  . $args['desc'] . '</label>';
+    $html .= '<div class="preview-image" style="padding-top:10px;">';
+    $html .= '<img src="';
+    $html .= $value ? $value : $args['std'];
+    $html .= '">';
+    $html .= '</div>';
+
+    echo $html;
+
 }
 
 
@@ -258,10 +292,10 @@ function wpis_rich_editor_callback($args) {
  *
 */
 
-function wpis_hook_callback($args) { 
- 	
+function wpis_hook_callback($args) {
+
 	do_action('wpis_' . $args['id']);
- 
+
 }
 
 /**
@@ -281,7 +315,7 @@ function wpis_settings_sanitize( $input ) {
 /**
  * Get Settings
  *
- * Retrieves all plugin settings and returns them 
+ * Retrieves all plugin settings and returns them
  * as a combined array.
  *
 */

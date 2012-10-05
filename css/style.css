@@ -1,0 +1,12 @@
+#infscr-loading {
+	display:block;
+	padding:10px;
+	margin:10px 0;
+	background:#f5f5f5;
+	border:1px solid #DFDFDF;
+}
+#infscr-loading img {
+	float:left;
+	display:block;
+	padding-right:10px;
+}

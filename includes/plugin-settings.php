@@ -42,7 +42,15 @@ function wpis_options_page() {
 
 
 function wpis_plugin_admin_scripts() {
+	wp_enqueue_script('media-upload');
+	wp_enqueue_script('thickbox');
 	wp_enqueue_script('wpis-admin-settings-scripts',  WPIS_BASE_URL . 'js/admin-settings.js', array('jquery'), '', true);
+	wp_localize_script('wpis-admin-settings-scripts', 'wpis_vars', array(
+        'post_id' 			=> isset($post->ID) ? $post->ID : 0,
+        'add_new_file' 	=> __('Add New File', 'wpis'), // thickbox title
+        'use_this_file' 	=> __('Use This File','wpis') // "use this file" button
+    ));
+    wp_enqueue_style('thickbox');
 }
 
 // WP Infinite Scroll Options link
